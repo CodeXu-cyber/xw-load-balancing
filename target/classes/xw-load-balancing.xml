@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <servers>
+        <server name="sever1" address="" weight=""/>
+        <server name="sever2" address="" weight=""/>
+        <server name="sever3" address="" weight=""/>
+        <server name="sever4" address="" weight=""/>
+    </servers>
+    <settings>
+        <!--六种负载均衡方式可选-->
+        <!--RandomServer-完全随机算法-->
+        <!--WeightRandomServer-加权随机算法-->
+        <!--PollServer-完全轮询算法-->
+        <!--WeightPollServer-加权轮询算法-->
+        <!--SmoothWeightPollServer-平滑加权轮询算法-->
+        <!--HashServer-哈希负载算法-->
+        <setting name="random" value="RandomServer"/>
+    </settings>
+</configuration>
