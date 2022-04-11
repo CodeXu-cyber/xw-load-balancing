@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <servers>
-        <server name="sever1" address="" weight=""/>
-        <server name="sever2" address="" weight=""/>
-        <server name="sever3" address="" weight=""/>
-        <server name="sever4" address="" weight=""/>
+        <server name="sever1" address="127.0.0.1:8080" weight="1"/>
+        <server name="sever2" address="127.0.0.1:8081" weight="2"/>
+        <server name="sever3" address="127.0.0.1:8082" weight="2"/>
+        <server name="sever4" address="127.0.0.1:8083" weight="1"/>
     </servers>
     <settings>
         <!--六种负载均衡方式可选-->
@@ -14,6 +14,7 @@
         <!--WeightPollServer-加权轮询算法-->
         <!--SmoothWeightPollServer-平滑加权轮询算法-->
         <!--HashServer-哈希负载算法-->
-        <setting name="random" value="RandomServer"/>
+        <setting name="random" value="HashServer"/>
+        <setting name="port" value="8088"/>
     </settings>
 </configuration>
