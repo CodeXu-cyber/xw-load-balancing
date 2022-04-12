@@ -19,13 +19,14 @@ public class HashServerImpl implements BalanceService {
 
     /**
      * 获取服务器
-     *
+     * hash直接取余法,利用绝对值,后续会改善
      * @param requestNumber
      * @param requestAddress
      * @return
      */
     @Override
     public Server getServer(int requestNumber, String requestAddress) {
-        return serverList.get(requestAddress.hashCode()%serverList.size());
+        System.out.println(requestAddress.hashCode());
+        return serverList.get(Math.abs(requestAddress.hashCode()%serverList.size()));
     }
 }

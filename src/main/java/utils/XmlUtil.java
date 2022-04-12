@@ -36,7 +36,7 @@ public class XmlUtil {
                 for (Element c : child.elements()) {
                     switch (child.getName()) {
                         case "servers":
-                            servers.add(new Server(c.attributeValue("name"), c.attributeValue("address"), Integer.valueOf("".equals(c.attributeValue("weight")) ? "0" : c.attributeValue("weight"))));
+                            servers.add(new Server(c.attributeValue("name"), c.attributeValue("address"), Integer.valueOf("".equals(c.attributeValue("port")) ? "80" : c.attributeValue("port")), Integer.valueOf("".equals(c.attributeValue("weight")) ? "0" : c.attributeValue("weight"))));
                             break;
                         case "settings":
                             config.put(c.attributeValue("name"), c.attributeValue("value"));

@@ -16,6 +16,7 @@ import java.util.Map;
  */
 public class Configuration {
     private volatile static Configuration configuration;
+    private List<Server> serverList;
     private BalanceService balanceService;
     private Integer port;
 
@@ -35,7 +36,7 @@ public class Configuration {
         if (file.exists()) {
             Map<String, Object> config = XmlUtil.analysisConfig(file);
             this.port = Integer.valueOf((String) config.get("port"));
-            List<Server> serverList = (List<Server>) config.get("servers");
+            this.serverList = (List<Server>) config.get("servers");
             String random = (String) config.get("random");
             switch (random){
                 case "WeightRandomServer":
@@ -64,5 +65,9 @@ public class Configuration {
 
     public Integer getPort() {
         return port;
+    }
+
+    public List<Server> getServerList() {
+        return serverList;
     }
 }

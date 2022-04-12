@@ -8,14 +8,16 @@ package system.entity;
 public class Server {
     private String serverName;
     private String address;
+    private Integer port;
     private Integer weight;
 
     public Server() {
     }
 
-    public Server(String serverName, String address, Integer weight) {
+    public Server(String serverName, String address, Integer port, Integer weight) {
         this.serverName = serverName;
         this.address = address;
+        this.port = port;
         this.weight = weight;
     }
 
@@ -23,24 +25,16 @@ public class Server {
         return serverName;
     }
 
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
-    }
-
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public Integer getPort() {
+        return port;
     }
 
     public Integer getWeight() {
         return weight;
-    }
-
-    public void setWeight(Integer weight) {
-        this.weight = weight;
     }
 
     @Override
@@ -48,6 +42,7 @@ public class Server {
         return "Server{" +
                 "serverName='" + serverName + '\'' +
                 ", address='" + address + '\'' +
+                ", port=" + port +
                 ", weight=" + weight +
                 '}';
     }
