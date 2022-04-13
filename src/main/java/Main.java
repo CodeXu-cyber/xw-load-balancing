@@ -19,7 +19,6 @@ public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
     public static final int SO_TIME_OUT = 300000;
     private static int requestNumber = 0;
-
     public static void main(String[] args) {
         BalanceService balanceService = CONFIGURATION.getBalanceService();
         try {
@@ -35,7 +34,6 @@ public class Main {
                 logger.info(localSocket.getRemoteSocketAddress().toString().replace("/","") + "  connected");
                 new SocketThread(localSocket, server.getAddress(), server.getPort()).start();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
