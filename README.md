@@ -49,14 +49,13 @@
         <server name="sever4" address="127.0.0.1" port="3306" weight="1"/>
     </servers>
     <settings>
-        <!--六种负载均衡方式可选-->
+        <!--五种负载均衡方式可选-->
         <!--RandomServer-完全随机算法-->
         <!--WeightRandomServer-加权随机算法-->
         <!--PollServer-完全轮询算法-->
         <!--WeightPollServer-加权轮询算法-->
-        <!--SmoothWeightPollServer-平滑加权轮询算法-->
         <!--HashServer-哈希负载算法-->
-        <setting name="random" value="HashServer"/>
+        <setting name="random" value="RandomServer"/>
         <!--监听端口-->
         <setting name="port" value="8088"/>
     </settings>
