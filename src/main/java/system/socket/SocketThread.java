@@ -28,10 +28,8 @@ public class SocketThread extends Thread {
     private Socket remoteSocket;
     private final String remoteHost;
     private final Integer remotePort;
-    private InputStream lin;
-    private InputStream rin;
-    private OutputStream lout;
-    private OutputStream rout;
+    private InputStream remoteSocketInputStream;
+    private OutputStream localSocketOutputStream;
 
     public SocketThread(Socket socket, String remoteHost, Integer remotePort) {
         this.localSocket = socket;
@@ -47,35 +45,37 @@ public class SocketThread extends Thread {
             //设置超时，超过时间未收到客户端请求，关闭资源
             //5分钟内无数据传输、关闭链接
             remoteSocket.setSoTimeout(SO_TIME_OUT);
-            rin = remoteSocket.getInputStream();
-            rout = remoteSocket.getOutputStream();
-            lin = localSocket.getInputStream();
-            lout = localSocket.getOutputStream();
-
+            remoteSocketInputStream = remoteSocket.getInputStream();
+            OutputStream remoteSocketOutputStream = remoteSocket.getOutputStream();
+            InputStream localSocketInputStream = localSocket.getInputStream();
+            localSocketOutputStream = localSocket.getOutputStream();
             new ReadThread().start();
-
             //写数据,负责读取客户端发送过来的数据，转发给远程
-            byte[] data = new byte[BUFFER_SIZE];
-            int len = 0;
-            while ((len = lin.read(data)) > 0) {
-                /*
-                  读到了缓存大小一致的数据，不需要拷贝，直接使用
-                  读到了比缓存大小的数据，需要拷贝到新数组然后再使用
-                 */
-                if (len == BUFFER_SIZE) {
-                    rout.write(data);
-                } else {
-                    byte[] dest = new byte[len];
-                    System.arraycopy(data, 0, dest, 0, len);
-                    rout.write(dest);
-                }
-
-            }
+            dataTransmission(localSocketInputStream, remoteSocketOutputStream);
 
         } catch (Exception e) {
             log.warn(e);
         } finally {
             close();
+        }
+    }
+
+    private void dataTransmission(InputStream inputStream, OutputStream outputStream) throws IOException {
+        byte[] data = new byte[BUFFER_SIZE];
+        int len = 0;
+        while ((len = inputStream.read(data)) > 0) {
+            /*
+              读到了缓存大小一致的数据，不需要拷贝，直接使用
+              读到了比缓存大小的数据，需要拷贝到新数组然后再使用
+             */
+            if (len == BUFFER_SIZE) {
+                outputStream.write(data);
+            } else {
+                byte[] dest = new byte[len];
+                System.arraycopy(data, 0, dest, 0, len);
+                outputStream.write(dest);
+            }
+
         }
     }
 
@@ -110,28 +110,13 @@ public class SocketThread extends Thread {
         @Override
         public void run() {
             try {
-                byte[] data = new byte[BUFFER_SIZE];
-                int len = 0;
-                /*
-                读到了缓存大小一致的数据，不需要拷贝，直接使用
-                读到了比缓存大小的数据，需要拷贝到新数组然后再使用
-                 */
-                while ((len = rin.read(data)) > 0) {
-                    if (len == BUFFER_SIZE) {
-                        lout.write(data);
-                    } else {
-                        byte[] dest = new byte[len];
-                        System.arraycopy(data, 0, dest, 0, len);
-                        lout.write(dest);
-                    }
-                }
+                dataTransmission(remoteSocketInputStream, localSocketOutputStream);
             } catch (IOException e) {
                 log.warn(e);
             } finally {
                 close();
             }
         }
-
     }
 
 

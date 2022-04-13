@@ -2,9 +2,9 @@
 <configuration>
     <servers>
         <server name="sever1" address="127.0.0.1" port="3306" weight="1"/>
-        <server name="sever2" address="127.0.0.1" port="3306" weight="2"/>
+        <server name="sever2" address="82.156.171.100" port="3306" weight="2"/>
         <server name="sever3" address="127.0.0.1" port="3306" weight="2"/>
-        <server name="sever4" address="127.0.0.1" port="3306" weight="1"/>
+        <server name="sever4" address="82.156.171.100" port="3306" weight="1"/>
     </servers>
     <settings>
         <!--五种负载均衡方式可选-->
@@ -13,7 +13,7 @@
         <!--PollServer-完全轮询算法-->
         <!--WeightPollServer-加权轮询算法-->
         <!--HashServer-哈希负载算法-->
-        <setting name="random" value="HashServer"/>
+        <setting name="random" value="RandomServer"/>
         <!--监听端口-->
         <setting name="port" value="8088"/>
     </settings>
