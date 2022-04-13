@@ -26,7 +26,6 @@ public class HashServerImpl implements BalanceService {
      */
     @Override
     public Server getServer(int requestNumber, String requestAddress) {
-        System.out.println(requestAddress.hashCode());
         return serverList.get(Math.abs(requestAddress.hashCode()%serverList.size()));
     }
 }
