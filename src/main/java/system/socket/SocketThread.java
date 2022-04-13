@@ -1,17 +1,15 @@
 package system.socket;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 /**
- * @ClassName por
+ * @ClassName SocketThread
  * @Author xuwei
  * @DATE 2022/4/12
  */
@@ -23,12 +21,7 @@ public class SocketThread extends Thread {
      * 五分钟超时
      */
     public static final int SO_TIME_OUT = 300000;
-
-    public static void log(Object message, Object... args) {
-        Date dat = new Date();
-        String msg = String.format("%1$tF %1$tT %2$-5s %3$s%n", dat, Thread.currentThread().getId(), String.format(message.toString(), args));
-        System.out.print(msg);
-    }
+    private static final Logger log = Logger.getLogger(SocketThread.class);
 
 
     private final Socket localSocket;
@@ -80,6 +73,7 @@ public class SocketThread extends Thread {
             }
 
         } catch (Exception e) {
+            log.warn(e);
         } finally {
             close();
         }
@@ -92,7 +86,7 @@ public class SocketThread extends Thread {
         try {
             if (remoteSocket != null && !remoteSocket.isClosed()) {
                 remoteSocket.close();
-                log("remoteSocket>>>>" + remoteSocket.getRemoteSocketAddress() + " socket closed ");
+                log.info("remoteSocket ---> " + remoteSocket.getRemoteSocketAddress().toString().replace("/", "") + " socket closed ");
             }
         } catch (IOException e1) {
             e1.printStackTrace();
@@ -101,9 +95,10 @@ public class SocketThread extends Thread {
         try {
             if (localSocket != null && !localSocket.isClosed()) {
                 localSocket.close();
-                log("localSocket>>>>" + localSocket.getRemoteSocketAddress() + " socket closed ");
+                log.info("localSocket ---> " + localSocket.getRemoteSocketAddress().toString().replace("/", "") + " socket closed ");
             }
         } catch (IOException e1) {
+            log.warn(e1);
         }
 
     }
@@ -131,6 +126,7 @@ public class SocketThread extends Thread {
                     }
                 }
             } catch (IOException e) {
+                log.warn(e);
             } finally {
                 close();
             }

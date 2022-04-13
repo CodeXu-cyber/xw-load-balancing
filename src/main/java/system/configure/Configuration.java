@@ -67,7 +67,4 @@ public class Configuration {
         return port;
     }
 
-    public List<Server> getServerList() {
-        return serverList;
-    }
 }

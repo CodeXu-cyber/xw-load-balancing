@@ -26,6 +26,6 @@ public class PollServerImpl implements BalanceService {
      */
     @Override
     public Server getServer(int requestNumber, String requestAddress) {
-        return serverList.get(requestNumber);
+        return serverList.get(requestNumber % serverList.size());
     }
 }
