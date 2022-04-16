@@ -35,10 +35,10 @@ public class Configuration {
         File file = new File(fileName);
         if (file.exists()) {
             Map<String, Object> config = XmlUtil.analysisConfig(file);
-            this.port = Integer.valueOf((String) config.get("port"));
+            this.port = Integer.valueOf(config.get("port") == null ? "8088" : "".equals(config.get("port")) ? "8088" : (String) config.get("port"));
             this.serverList = (List<Server>) config.get("servers");
-            String random = (String) config.get("random");
-            switch (random){
+            String random = config.get("random") == null ? "RandomServer" : "".equals(config.get("random")) ? "RandomServer" : (String) config.get("random");
+            switch (random) {
                 case "WeightRandomServer":
                     balanceService = new WeightRandomServerImpl(serverList);
                     break;

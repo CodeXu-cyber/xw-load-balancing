@@ -52,7 +52,6 @@ public class SocketThread extends Thread {
             new ReadThread().start();
             //写数据,负责读取客户端发送过来的数据，转发给远程
             dataTransmission(localSocketInputStream, remoteSocketOutputStream);
-
         } catch (Exception e) {
             log.warn(e);
         } finally {
@@ -62,7 +61,7 @@ public class SocketThread extends Thread {
 
     private void dataTransmission(InputStream inputStream, OutputStream outputStream) throws IOException {
         byte[] data = new byte[BUFFER_SIZE];
-        int len = 0;
+        int len;
         while ((len = inputStream.read(data)) > 0) {
             /*
               读到了缓存大小一致的数据，不需要拷贝，直接使用
@@ -75,7 +74,6 @@ public class SocketThread extends Thread {
                 System.arraycopy(data, 0, dest, 0, len);
                 outputStream.write(dest);
             }
-
         }
     }
 
@@ -100,7 +98,6 @@ public class SocketThread extends Thread {
         } catch (IOException e1) {
             log.warn(e1);
         }
-
     }
 
     /**
