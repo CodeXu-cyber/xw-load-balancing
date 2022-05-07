@@ -33,9 +33,6 @@
         - socket
             - SocketThread
                 - Socket线程类
-    - utils
-        - XmlUtil
-            - 解析xml工具类
             
 
 - xml配置文件如下定义
