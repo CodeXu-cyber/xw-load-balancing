@@ -28,4 +28,24 @@ public class HashServerImpl implements BalanceService {
     public Server getServer(int requestNumber, String requestAddress) {
         return serverList.get(Math.abs(requestAddress.hashCode()%serverList.size()));
     }
+
+    /**
+     * 添加服务器节点
+     *
+     * @param serverNodeName nodeName
+     */
+    @Override
+    public void addServerNode(String serverNodeName) {
+
+    }
+
+    /**
+     * 删除服务器节点
+     *
+     * @param serverNodeName nodeName
+     */
+    @Override
+    public void delServerNode(String serverNodeName) {
+
+    }
 }
