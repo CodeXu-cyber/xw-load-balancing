@@ -51,7 +51,7 @@ public class ConsistentHashServerImpl implements BalanceService {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if (treeMapHash.isEmpty()){
+                if (treeMapHash.isEmpty()) {
                     return;
                 }
                 //对错误服务列表一直监控
@@ -78,25 +78,27 @@ public class ConsistentHashServerImpl implements BalanceService {
     public Server getServer(int requestNumber, String requestAddress) {
         Server server = null;
         while (true) {
-            if (treeMapHash.isEmpty()) {
-                logger.info("Don not have server available!");
-                break;
-            }
-            int hash = GetHashCode.getHashCode(requestAddress);
-            // 向右寻找第一个 key
-            Map.Entry<Integer, Server> subEntry = treeMapHash.ceilingEntry(hash);
-            // 设置成一个环，如果超过尾部，则取第一个点
-            subEntry = subEntry == null ? treeMapHash.firstEntry() : subEntry;
-            Server server1 = subEntry.getValue();
-            // 测试连接
-            boolean isConnected = ConnectUtil.telnet(server1.getAddress(), server1.getPort(), 200);
-            if (isConnected) {
-                server = server1;
-                break;
-            } else {
-                //失败则加入到失效服务器列表并删除此节点
-                failServer.add(server1);
-                delServerNode(server1);
+            synchronized (treeMapHash) {
+                if (treeMapHash.isEmpty()) {
+                    logger.info("Don not have server available!");
+                    break;
+                }
+                int hash = GetHashCode.getHashCode(requestAddress);
+                // 向右寻找第一个 key
+                Map.Entry<Integer, Server> subEntry = treeMapHash.ceilingEntry(hash);
+                // 设置成一个环，如果超过尾部，则取第一个点
+                subEntry = subEntry == null ? treeMapHash.firstEntry() : subEntry;
+                Server server1 = subEntry.getValue();
+                // 测试连接
+                boolean isConnected = ConnectUtil.telnet(server1.getAddress(), server1.getPort(), 200);
+                if (isConnected) {
+                    server = server1;
+                    break;
+                } else {
+                    //失败则加入到失效服务器列表并删除此节点
+                    failServer.add(server1);
+                    delServerNode(server1);
+                }
             }
         }
         return server;
@@ -109,11 +111,13 @@ public class ConsistentHashServerImpl implements BalanceService {
      */
     @Override
     public void addServerNode(Server server) {
-        int hash = GetHashCode.getHashCode(server.getAddress());
-        treeMapHash.put(hash, server);
-        for (int i = 1; i <= vnnNodeCount; i++) {
-            int vnnNodeHash = GetHashCode.getHashCode(server.getAddress() + server.getPort() + "&&" + i);
-            treeMapHash.put(vnnNodeHash, server);
+        synchronized (treeMapHash) {
+            int hash = GetHashCode.getHashCode(server.getAddress());
+            treeMapHash.put(hash, server);
+            for (int i = 1; i <= vnnNodeCount; i++) {
+                int vnnNodeHash = GetHashCode.getHashCode(server.getAddress() + server.getPort() + "&&" + i);
+                treeMapHash.put(vnnNodeHash, server);
+            }
         }
     }
 
@@ -124,13 +128,14 @@ public class ConsistentHashServerImpl implements BalanceService {
      */
     @Override
     public void delServerNode(Server server) {
-        int hash = GetHashCode.getHashCode(server.getAddress() + server.getPort());
-        treeMapHash.remove(hash);
-        for (int i = 1; i <= vnnNodeCount; i++) {
-            int vnnNodeHash = GetHashCode.getHashCode(server.getAddress() + server.getPort() + "&&" + i);
-            treeMapHash.remove(vnnNodeHash);
+        synchronized (treeMapHash) {
+            int hash = GetHashCode.getHashCode(server.getAddress() + server.getPort());
+            treeMapHash.remove(hash);
+            for (int i = 1; i <= vnnNodeCount; i++) {
+                int vnnNodeHash = GetHashCode.getHashCode(server.getAddress() + server.getPort() + "&&" + i);
+                treeMapHash.remove(vnnNodeHash);
+            }
         }
-
     }
 
 
