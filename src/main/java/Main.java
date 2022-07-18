@@ -32,6 +32,9 @@ public class Main {
                 requestNumber = requestNumber == Integer.MAX_VALUE ? 0 : ++requestNumber;
                 //根据负载均衡算法获取转发服务器
                 Server server = balanceService.getServer(requestNumber, localSocket.getInetAddress().getHostAddress());
+                if (server == null) {
+                    return;
+                }
                 //5分钟内无数据传输、关闭链接
                 localSocket.setSoTimeout(SO_TIME_OUT);
                 logger.info(localSocket.getRemoteSocketAddress().toString().replace("/", "") + "  connect to server:" + server.getServerName());

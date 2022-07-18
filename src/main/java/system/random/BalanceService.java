@@ -28,7 +28,7 @@ public interface BalanceService {
     /**
      * 删除服务器节点
      *
-     * @param serverAddress serverAddress
+     * @param server server
      */
-    void delServerNode(String serverAddress);
+    void delServerNode(Server server);
 }

@@ -36,10 +36,10 @@ public class ConsistentHashServerImpl implements BalanceService {
         this.vnnNodeCount = vnnNodeCount;
         TreeMap<Integer, Server> treeMapHash = new TreeMap<>();
         for (Server server : serverList) {
-            int hash = GetHashCode.getHashCode(server.getAddress());
+            int hash = GetHashCode.getHashCode(server.getAddress() + server.getPort());
             treeMapHash.put(hash, server);
             for (int i = 1; i <= this.vnnNodeCount; i++) {
-                treeMapHash.put(GetHashCode.getHashCode(server.getAddress() + "&&" + i), server);
+                treeMapHash.put(GetHashCode.getHashCode(server.getAddress() + server.getPort() + "&&" + i), server);
             }
         }
         this.treeMapHash = treeMapHash;
@@ -47,9 +47,12 @@ public class ConsistentHashServerImpl implements BalanceService {
             logger.info("Server Monitor start!");
             while (true) {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                }
+                if (treeMapHash.isEmpty()){
+                    return;
                 }
                 //对错误服务列表一直监控
                 for (Server server : failServer) {
@@ -73,8 +76,12 @@ public class ConsistentHashServerImpl implements BalanceService {
      */
     @Override
     public Server getServer(int requestNumber, String requestAddress) {
-        Server server;
+        Server server = null;
         while (true) {
+            if (treeMapHash.isEmpty()) {
+                logger.info("Don not have server available!");
+                break;
+            }
             int hash = GetHashCode.getHashCode(requestAddress);
             // 向右寻找第一个 key
             Map.Entry<Integer, Server> subEntry = treeMapHash.ceilingEntry(hash);
@@ -88,9 +95,8 @@ public class ConsistentHashServerImpl implements BalanceService {
                 break;
             } else {
                 //失败则加入到失效服务器列表并删除此节点
-                logger.info("server " + server1.getAddress() + " connect fail!");
                 failServer.add(server1);
-                delServerNode(server1.getAddress());
+                delServerNode(server1);
             }
         }
         return server;
@@ -106,7 +112,7 @@ public class ConsistentHashServerImpl implements BalanceService {
         int hash = GetHashCode.getHashCode(server.getAddress());
         treeMapHash.put(hash, server);
         for (int i = 1; i <= vnnNodeCount; i++) {
-            int vnnNodeHash = GetHashCode.getHashCode(server.getAddress() + "&&" + i);
+            int vnnNodeHash = GetHashCode.getHashCode(server.getAddress() + server.getPort() + "&&" + i);
             treeMapHash.put(vnnNodeHash, server);
         }
     }
@@ -114,14 +120,14 @@ public class ConsistentHashServerImpl implements BalanceService {
     /**
      * 删除服务器节点
      *
-     * @param serverAddress serverAddress
+     * @param server server
      */
     @Override
-    public void delServerNode(String serverAddress) {
-        int hash = GetHashCode.getHashCode(serverAddress);
+    public void delServerNode(Server server) {
+        int hash = GetHashCode.getHashCode(server.getAddress() + server.getPort());
         treeMapHash.remove(hash);
         for (int i = 1; i <= vnnNodeCount; i++) {
-            int vnnNodeHash = GetHashCode.getHashCode(serverAddress + "&&" + i);
+            int vnnNodeHash = GetHashCode.getHashCode(server.getAddress() + server.getPort() + "&&" + i);
             treeMapHash.remove(vnnNodeHash);
         }
 

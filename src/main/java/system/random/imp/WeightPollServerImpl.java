@@ -41,9 +41,12 @@ public class WeightPollServerImpl implements BalanceService {
             logger.info("Server Monitor start!");
             while (true) {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                }
+                if (serverList.isEmpty()){
+                    return;
                 }
                 //对错误服务列表一直监控
                 for (Server server : failServer) {
@@ -78,7 +81,7 @@ public class WeightPollServerImpl implements BalanceService {
             } else {
                 //失败则加入到失效服务器列表并删除此节点
                 failServer.add(server1);
-                delServerNode(server1.getAddress());
+                delServerNode(server1);
             }
         }
         return server;
@@ -99,11 +102,11 @@ public class WeightPollServerImpl implements BalanceService {
     /**
      * 删除服务器节点
      *
-     * @param serverAddress serverAddress
+     * @param server server
      */
     @Override
-    public void delServerNode(String serverAddress) {
-        serverList.removeIf(server -> server.getAddress().equals(serverAddress));
+    public void delServerNode(Server server) {
+        serverList.removeIf(server1 -> server1.getAddress().equals(server.getAddress())&&server1.getPort().equals(server.getPort()));
     }
 
 

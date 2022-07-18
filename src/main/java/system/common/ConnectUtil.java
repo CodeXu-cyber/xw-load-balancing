@@ -14,6 +14,7 @@ import java.net.Socket;
  **/
 public class ConnectUtil {
     private static final Logger logger = Logger.getLogger(ConnectUtil.class);
+
     /**
      * 测试telnet 机器端口的连通性
      *
@@ -29,13 +30,13 @@ public class ConnectUtil {
             socket.connect(new InetSocketAddress(hostname, port), timeout);
             isConnected = socket.isConnected();
         } catch (IOException ignored) {
-            logger.info(hostname+"connect failed!");
+            logger.info(hostname + ":" + port + " connect failed!");
         } finally {
             try {
                 socket.close();
             } catch (IOException ignored) {
                 isConnected = false;
-                logger.info(hostname+"connect failed!");
+                logger.info(hostname + ":" + port + " connect failed!");
             }
         }
         return isConnected;
