@@ -7,34 +7,8 @@
     - 加权随机算法
     - 完全轮询算法
     - 加权轮询算法
-    - 简单的一致性hash算法
-- 模块对应:
-    - system
-        - configure
-            - Configuration
-                - 配置类
-        - entity
-            - Server
-                - 封装被代理服务器
-        - random
-            - BalanceService
-                - 根据负载均衡接口获取被代理服务器
-            - imp
-                - HashServerImpl
-                    - 一致性哈希
-                - RandomServerImpl
-                    - 随机算法
-                - WeightRandomServerImpl
-                    - 加权随机算法
-                - PollServerImpl
-                    - 轮询算法
-                - WeightPollServerImpl
-                    - 加权轮询算法
-        - socket
-            - SocketThread
-                - Socket线程类
-            
-
+    - 余数Hash算法
+    - 简单的一致性Hash算法
 - xml配置文件如下定义
 ```
 <?xml version="1.0" encoding="UTF-8"?>
