@@ -13,7 +13,6 @@ import java.net.Socket;
  * @Author xuwei
  * @DATE 2022/4/11
  */
-
 public class Main {
     private static final Configuration CONFIGURATION = Configuration.getConfiguration("src/main/resources/xw-load-balancing.xml");
     private static final Logger logger = Logger.getLogger(Main.class);
