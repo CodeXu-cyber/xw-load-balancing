@@ -2,6 +2,12 @@ package system.random;
 
 import system.entity.Server;
 
+/**
+ * 负载均衡接口
+ *
+ * @author xuwei
+ * @date 2022/07/18 10:41
+ **/
 public interface BalanceService {
     /**
      * 获取服务器
@@ -15,14 +21,14 @@ public interface BalanceService {
     /**
      * 添加服务器节点
      *
-     * @param serverNodeName nodeName
+     * @param server server
      */
-    void addServerNode(String serverNodeName);
+    void addServerNode(Server server);
 
     /**
      * 删除服务器节点
      *
-     * @param serverNodeName nodeName
+     * @param serverAddress serverAddress
      */
-    void delServerNode(String serverNodeName);
+    void delServerNode(String serverAddress);
 }

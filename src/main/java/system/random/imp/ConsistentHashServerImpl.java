@@ -2,41 +2,47 @@ package system.random.imp;
 
 import org.apache.log4j.Logger;
 import system.common.ConnectUtil;
+import system.common.GetHashCode;
 import system.entity.Server;
 import system.random.BalanceService;
 
 import java.util.*;
 
 /**
- * 加权随机实现类
+ * 一致性Hash实现类
  *
  * @author xuwei
  * @date 2022/07/18 10:41
  **/
-public class WeightRandomServerImpl implements BalanceService {
+public class ConsistentHashServerImpl implements BalanceService {
     /**
-     * 服务器列表
+     * 虚拟节点数
      */
-    private final List<Server> serverList;
+    private final Integer vnnNodeCount;
+    /**
+     * 一致性hash环
+     */
+    private final TreeMap<Integer, Server> treeMapHash;
+
     /**
      * 连接失败服务器列表
      */
     private final List<Server> failServer = Collections.synchronizedList(new LinkedList<>());
-    /**
-     * 伪随机数生成器
-     */
-    private final Random random = new Random();
 
-    private static final Logger logger = Logger.getLogger(WeightRandomServerImpl.class);
+    private static final Logger logger = Logger.getLogger(ConsistentHashServerImpl.class);
 
-    public WeightRandomServerImpl(List<Server> serverList) {
-        List<Server> servers = new ArrayList<>();
+
+    public ConsistentHashServerImpl(List<Server> serverList, Integer vnnNodeCount) {
+        this.vnnNodeCount = vnnNodeCount;
+        TreeMap<Integer, Server> treeMapHash = new TreeMap<>();
         for (Server server : serverList) {
-            for (int i = 0; i < server.getWeight(); i++) {
-                servers.add(server);
+            int hash = GetHashCode.getHashCode(server.getAddress());
+            treeMapHash.put(hash, server);
+            for (int i = 1; i <= this.vnnNodeCount; i++) {
+                treeMapHash.put(GetHashCode.getHashCode(server.getAddress() + "&&" + i), server);
             }
         }
-        this.serverList = Collections.synchronizedList(servers);
+        this.treeMapHash = treeMapHash;
         Runnable runnable = () -> {
             logger.info("Server Monitor start!");
             while (true) {
@@ -61,15 +67,20 @@ public class WeightRandomServerImpl implements BalanceService {
     /**
      * 获取服务器
      *
-     * @param requestNumber
-     * @param requestAddress
+     * @param requestNumber  请求量
+     * @param requestAddress 请求地址
      * @return
      */
     @Override
     public Server getServer(int requestNumber, String requestAddress) {
         Server server;
         while (true) {
-            Server server1 = serverList.get(random.nextInt(serverList.size()));
+            int hash = GetHashCode.getHashCode(requestAddress);
+            // 向右寻找第一个 key
+            Map.Entry<Integer, Server> subEntry = treeMapHash.ceilingEntry(hash);
+            // 设置成一个环，如果超过尾部，则取第一个点
+            subEntry = subEntry == null ? treeMapHash.firstEntry() : subEntry;
+            Server server1 = subEntry.getValue();
             // 测试连接
             boolean isConnected = ConnectUtil.telnet(server1.getAddress(), server1.getPort(), 200);
             if (isConnected) {
@@ -77,6 +88,7 @@ public class WeightRandomServerImpl implements BalanceService {
                 break;
             } else {
                 //失败则加入到失效服务器列表并删除此节点
+                logger.info("server " + server1.getAddress() + " connect fail!");
                 failServer.add(server1);
                 delServerNode(server1.getAddress());
             }
@@ -91,8 +103,11 @@ public class WeightRandomServerImpl implements BalanceService {
      */
     @Override
     public void addServerNode(Server server) {
-        for (int i = 0; i < server.getWeight(); i++) {
-            serverList.add(server);
+        int hash = GetHashCode.getHashCode(server.getAddress());
+        treeMapHash.put(hash, server);
+        for (int i = 1; i <= vnnNodeCount; i++) {
+            int vnnNodeHash = GetHashCode.getHashCode(server.getAddress() + "&&" + i);
+            treeMapHash.put(vnnNodeHash, server);
         }
     }
 
@@ -103,7 +118,13 @@ public class WeightRandomServerImpl implements BalanceService {
      */
     @Override
     public void delServerNode(String serverAddress) {
-        serverList.removeIf(server -> server.getAddress().equals(serverAddress));
+        int hash = GetHashCode.getHashCode(serverAddress);
+        treeMapHash.remove(hash);
+        for (int i = 1; i <= vnnNodeCount; i++) {
+            int vnnNodeHash = GetHashCode.getHashCode(serverAddress + "&&" + i);
+            treeMapHash.remove(vnnNodeHash);
+        }
+
     }
 
 

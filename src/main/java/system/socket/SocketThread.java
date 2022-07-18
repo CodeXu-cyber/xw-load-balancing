@@ -15,19 +15,18 @@ import java.net.Socket;
  */
 public class SocketThread extends Thread {
 
-    private static final int BUFFER_SIZE = 8092;
-
     /**
      * 五分钟超时
      */
     public static final int SO_TIME_OUT = 300000;
+    private static final int BUFFER_SIZE = 8092;
     private static final Logger log = Logger.getLogger(SocketThread.class);
 
 
     private final Socket localSocket;
-    private Socket remoteSocket;
     private final String remoteHost;
     private final Integer remotePort;
+    private Socket remoteSocket;
     private InputStream remoteSocketInputStream;
     private OutputStream localSocketOutputStream;
 

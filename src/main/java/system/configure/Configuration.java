@@ -13,25 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @ClassName Configuration
- * @Author xuwei
- * @DATE 2022/4/11
- */
+ * 配置类
+ *
+ * @author xuwei
+ * @date 2022/07/18 11:30
+ **/
 public class Configuration {
     private volatile static Configuration configuration;
     private BalanceService balanceService;
     private Integer port;
-
-    public static Configuration getConfiguration(String fileName) {
-        if (configuration == null) {
-            synchronized (Configuration.class) {
-                if (configuration == null) {
-                    configuration = new Configuration(fileName);
-                }
-            }
-        }
-        return configuration;
-    }
 
     private Configuration(String fileName) {
         File file = new File(fileName);
@@ -44,6 +34,7 @@ public class Configuration {
             } catch (DocumentException e) {
                 e.printStackTrace();
             }
+            Integer vnnNodeCount = 3;
             assert document != null;
             Element root = document.getRootElement();
             List<Element> childElements = root.elements();
@@ -59,6 +50,9 @@ public class Configuration {
                                     case "port":
                                         this.port = Integer.valueOf(c.attributeValue("value") == null ? "8088" : "".equals(c.attributeValue("value")) ? "8088" : c.attributeValue("value"));
                                         break;
+                                    case "vnnNodeCount":
+                                        vnnNodeCount = c.attributeValue("value") == null ? vnnNodeCount : "".equals(c.attributeValue("value")) ? vnnNodeCount : Integer.valueOf(c.attributeValue("value"));
+                                        break;
                                     case "random":
                                         String random = c.attributeValue("value") == null ? "RandomServer" : "".equals(c.attributeValue("value")) ? "RandomServer" : c.attributeValue("value");
                                         switch (random) {
@@ -73,6 +67,9 @@ public class Configuration {
                                                 break;
                                             case "HashServer":
                                                 balanceService = new HashServerImpl(serverList);
+                                                break;
+                                            case "ConsistentHash":
+                                                balanceService = new ConsistentHashServerImpl(serverList, vnnNodeCount);
                                                 break;
                                             case "RandomServer":
                                             default:
@@ -90,6 +87,17 @@ public class Configuration {
                 }
             }
         }
+    }
+
+    public static Configuration getConfiguration(String fileName) {
+        if (configuration == null) {
+            synchronized (Configuration.class) {
+                if (configuration == null) {
+                    configuration = new Configuration(fileName);
+                }
+            }
+        }
+        return configuration;
     }
 
     public BalanceService getBalanceService() {

@@ -1,18 +1,33 @@
 package system.random.imp;
 
+import org.apache.log4j.Logger;
+import system.common.ConnectUtil;
 import system.entity.Server;
 import system.random.BalanceService;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @ClassName WeightPollServer
- * @Author xuwei
- * @DATE 2022/4/11
- */
+ * 加权轮询实现类
+ *
+ * @author xuwei
+ * @date 2022/07/18 10:41
+ **/
 public class WeightPollServerImpl implements BalanceService {
+
+    /**
+     * 服务器列表
+     */
     private final List<Server> serverList;
+    /**
+     * 连接失败服务器列表
+     */
+    private final List<Server> failServer = Collections.synchronizedList(new LinkedList<>());
+
+    private static final Logger logger = Logger.getLogger(WeightPollServerImpl.class);
 
     public WeightPollServerImpl(List<Server> serverList) {
         List<Server> servers = new ArrayList<>();
@@ -21,7 +36,26 @@ public class WeightPollServerImpl implements BalanceService {
                 servers.add(server);
             }
         }
-        this.serverList = servers;
+        this.serverList = Collections.synchronizedList(servers);
+        Runnable runnable = () -> {
+            logger.info("Server Monitor start!");
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //对错误服务列表一直监控
+                for (Server server : failServer) {
+                    boolean isConnected = ConnectUtil.telnet(server.getAddress(), server.getPort(), 200);
+                    if (isConnected) {
+                        failServer.removeIf(server1 -> server1.getAddress().equals(server.getAddress()));
+                        addServerNode(server);
+                    }
+                }
+            }
+        };
+        new Thread(runnable).start();
     }
 
     /**
@@ -33,26 +67,44 @@ public class WeightPollServerImpl implements BalanceService {
      */
     @Override
     public Server getServer(int requestNumber, String requestAddress) {
-        return serverList.get(requestNumber % serverList.size());
+        Server server;
+        while (true) {
+            Server server1 = serverList.get(requestNumber % serverList.size());
+            // 测试连接
+            boolean isConnected = ConnectUtil.telnet(server1.getAddress(), server1.getPort(), 200);
+            if (isConnected) {
+                server = server1;
+                break;
+            } else {
+                //失败则加入到失效服务器列表并删除此节点
+                failServer.add(server1);
+                delServerNode(server1.getAddress());
+            }
+        }
+        return server;
     }
 
     /**
      * 添加服务器节点
      *
-     * @param serverNodeName nodeName
+     * @param server server
      */
     @Override
-    public void addServerNode(String serverNodeName) {
-
+    public void addServerNode(Server server) {
+        for (int i = 0; i < server.getWeight(); i++) {
+            serverList.add(server);
+        }
     }
 
     /**
      * 删除服务器节点
      *
-     * @param serverNodeName nodeName
+     * @param serverAddress serverAddress
      */
     @Override
-    public void delServerNode(String serverNodeName) {
-
+    public void delServerNode(String serverAddress) {
+        serverList.removeIf(server -> server.getAddress().equals(serverAddress));
     }
+
+
 }

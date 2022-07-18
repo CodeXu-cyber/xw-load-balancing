@@ -4,7 +4,7 @@ import system.entity.Server;
 import system.random.BalanceService;
 import system.socket.SocketThread;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -14,10 +14,11 @@ import java.net.Socket;
  * @DATE 2022/4/11
  */
 public class Main {
+    public static final int SO_TIME_OUT = 300000;
     private static final Configuration CONFIGURATION = Configuration.getConfiguration("src/main/resources/xw-load-balancing.xml");
     private static final Logger logger = Logger.getLogger(Main.class);
-    public static final int SO_TIME_OUT = 300000;
     private static int requestNumber = 0;
+
     public static void main(String[] args) {
         BalanceService balanceService = CONFIGURATION.getBalanceService();
         try {
@@ -33,7 +34,7 @@ public class Main {
                 Server server = balanceService.getServer(requestNumber, localSocket.getInetAddress().getHostAddress());
                 //5分钟内无数据传输、关闭链接
                 localSocket.setSoTimeout(SO_TIME_OUT);
-                logger.info(localSocket.getRemoteSocketAddress().toString().replace("/","") + "  connected");
+                logger.info(localSocket.getRemoteSocketAddress().toString().replace("/", "") + "  connect to server:" + server.getServerName());
                 //启动线程处理本连接
                 new SocketThread(localSocket, server.getAddress(), server.getPort()).start();
             }
