@@ -9,7 +9,7 @@
     <settings>
         <!--虚拟节点数量-->
         <setting name="vnnNodeCount" value="3"/>
-        <!--五种负载均衡方式可选,默认RandomServer-->
+        <!--六种负载均衡方式可选,默认RandomServer-->
         <!--RandomServer-完全随机算法-->
         <!--WeightRandomServer-加权随机算法-->
         <!--PollServer-完全轮询算法-->
