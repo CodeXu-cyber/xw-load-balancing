@@ -39,6 +39,7 @@ public class HashServerImpl implements BalanceService {
                     e.printStackTrace();
                 }
                 if (serverList.isEmpty()){
+                    logger.info("Server Monitor stop!");
                     return;
                 }
                 //对错误服务列表一直监控
@@ -51,7 +52,9 @@ public class HashServerImpl implements BalanceService {
                 }
             }
         };
-        new Thread(runnable).start();
+        Thread serverMonitor = new Thread(runnable);
+        serverMonitor.setName("server-monitor");
+        serverMonitor.start();
     }
 
     /**

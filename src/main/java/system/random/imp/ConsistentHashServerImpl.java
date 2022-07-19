@@ -52,6 +52,7 @@ public class ConsistentHashServerImpl implements BalanceService {
                     e.printStackTrace();
                 }
                 if (treeMapHash.isEmpty()) {
+                    logger.info("Server Monitor stop!");
                     return;
                 }
                 //对错误服务列表一直监控
@@ -64,7 +65,9 @@ public class ConsistentHashServerImpl implements BalanceService {
                 }
             }
         };
-        new Thread(runnable).start();
+        Thread serverMonitor = new Thread(runnable);
+        serverMonitor.setName("server-monitor");
+        serverMonitor.start();
     }
 
     /**
