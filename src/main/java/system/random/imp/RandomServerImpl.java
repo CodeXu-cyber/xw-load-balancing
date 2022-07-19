@@ -72,8 +72,12 @@ public class RandomServerImpl implements BalanceService {
      */
     @Override
     public Server getServer(int requestNumber, String requestAddress) {
-        Server server;
+        Server server = null;
         while (true) {
+            if (serverList.isEmpty()){
+                logger.warn("Don not have server available!");
+                break;
+            }
             Server server1 = serverList.get(random.nextInt(serverList.size()));
             // 测试连接
             boolean isConnected = ConnectUtil.telnet(server1.getAddress(), server1.getPort(), 200);

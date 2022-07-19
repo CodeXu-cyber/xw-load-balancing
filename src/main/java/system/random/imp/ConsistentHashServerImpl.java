@@ -83,7 +83,7 @@ public class ConsistentHashServerImpl implements BalanceService {
         while (true) {
             synchronized (treeMapHash) {
                 if (treeMapHash.isEmpty()) {
-                    logger.info("Don not have server available!");
+                    logger.warn("Don not have server available!");
                     break;
                 }
                 int hash = GetHashCode.getHashCode(requestAddress);

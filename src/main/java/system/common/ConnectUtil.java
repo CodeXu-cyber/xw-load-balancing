@@ -30,13 +30,13 @@ public class ConnectUtil {
             socket.connect(new InetSocketAddress(hostname, port), timeout);
             isConnected = socket.isConnected();
         } catch (IOException ignored) {
-            logger.info("Remote server \"" + hostname + ":" + port + "\" connect failed!");
+            logger.warn("Remote server \"" + hostname + ":" + port + "\" connect failed!");
         } finally {
             try {
                 socket.close();
             } catch (IOException ignored) {
                 isConnected = false;
-                logger.info("Remote server \"" + hostname + ":" + port + "\" connect failed!");
+                logger.warn("Remote server \"" + hostname + ":" + port + "\" connect failed!");
             }
         }
         return isConnected;
