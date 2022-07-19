@@ -53,7 +53,7 @@ public class WeightPollServerImpl implements BalanceService {
                 for (Server server : failServer) {
                     boolean isConnected = ConnectUtil.telnet(server.getAddress(), server.getPort(), 200);
                     if (isConnected) {
-                        failServer.removeIf(server1 -> server1.getAddress().equals(server.getAddress()));
+                        failServer.removeIf(server1 -> server1.getAddress().equals(server.getAddress()) && server1.getPort().equals(server.getPort()));
                         addServerNode(server);
                     }
                 }
