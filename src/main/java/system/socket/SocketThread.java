@@ -83,7 +83,7 @@ public class SocketThread extends Thread {
         try {
             if (remoteSocket != null && !remoteSocket.isClosed()) {
                 remoteSocket.close();
-                log.info("remoteSocket ---> " + remoteSocket.getRemoteSocketAddress().toString().replace("/", "") + " socket closed ");
+                log.info("remoteSocket ---> " + remoteSocket.getRemoteSocketAddress().toString().replace("/", "") + " socket closed");
             }
         } catch (IOException e1) {
             e1.printStackTrace();
@@ -92,7 +92,7 @@ public class SocketThread extends Thread {
         try {
             if (localSocket != null && !localSocket.isClosed()) {
                 localSocket.close();
-                log.info("localSocket ---> " + localSocket.getRemoteSocketAddress().toString().replace("/", "") + " socket closed ");
+                log.info("localSocket ---> " + localSocket.getRemoteSocketAddress().toString().replace("/", "") + " socket closed");
             }
         } catch (IOException e1) {
             log.warn(e1);

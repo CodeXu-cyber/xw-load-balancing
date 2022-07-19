@@ -1,4 +1,5 @@
 import org.apache.log4j.Logger;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import system.configure.Configuration;
 import system.entity.Server;
 import system.random.BalanceService;
@@ -7,6 +8,9 @@ import system.socket.SocketThread;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName Main
@@ -16,6 +20,9 @@ import java.net.Socket;
 public class Main {
     public static final int SO_TIME_OUT = 300000;
     private static final Configuration CONFIGURATION = Configuration.getConfiguration("src/main/resources/xw-load-balancing.xml");
+    private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(5, 10,
+            60L, TimeUnit.SECONDS,
+            new SynchronousQueue<>(), new CustomizableThreadFactory());
     private static final Logger logger = Logger.getLogger(Main.class);
     private static int requestNumber = 0;
 
@@ -37,9 +44,9 @@ public class Main {
                 }
                 //5分钟内无数据传输、关闭链接
                 localSocket.setSoTimeout(SO_TIME_OUT);
-                logger.info(localSocket.getRemoteSocketAddress().toString().replace("/", "") + "  connect to server:" + server.getServerName());
+                logger.info(localSocket.getRemoteSocketAddress().toString().replace("/", "") + "  connect to server : \"" + server.getServerName() + "\"");
                 //启动线程处理本连接
-                new SocketThread(localSocket, server.getAddress(), server.getPort()).start();
+                THREAD_POOL_EXECUTOR.submit(new SocketThread(localSocket, server.getAddress(), server.getPort()));
             }
         } catch (IOException e) {
             e.printStackTrace();
