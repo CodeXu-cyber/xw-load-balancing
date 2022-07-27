@@ -27,7 +27,7 @@ public class HashServerImpl implements BalanceService {
 
     /**
      * 获取服务器
-     * hash直接取余法,利用绝对值,后续会改善
+     * hash直接取余法
      *
      * @param requestNumber
      * @param requestAddress
