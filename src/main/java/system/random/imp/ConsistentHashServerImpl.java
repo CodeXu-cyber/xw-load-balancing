@@ -24,11 +24,6 @@ public class ConsistentHashServerImpl implements BalanceService {
      */
     private final TreeMap<Integer, Server> treeMapHash;
 
-    /**
-     * 连接失败服务器列表
-     */
-    private final List<Server> failServer = Collections.synchronizedList(new LinkedList<>());
-
     private static final Logger logger = Logger.getLogger(ConsistentHashServerImpl.class);
 
 
@@ -43,31 +38,6 @@ public class ConsistentHashServerImpl implements BalanceService {
             }
         }
         this.treeMapHash = treeMapHash;
-        Runnable runnable = () -> {
-            logger.info("Server Monitor start!");
-            while (true) {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (treeMapHash.isEmpty()) {
-                    logger.info("Server Monitor stop!");
-                    return;
-                }
-                //对错误服务列表一直监控
-                for (Server server : failServer) {
-                    boolean isConnected = ConnectUtil.telnet(server.getAddress(), server.getPort(), 200);
-                    if (isConnected) {
-                        failServer.removeIf(server1 -> server1.getAddress().equals(server.getAddress()) && server1.getPort().equals(server.getPort()));
-                        addServerNode(server);
-                    }
-                }
-            }
-        };
-        Thread serverMonitor = new Thread(runnable);
-        serverMonitor.setName("server-monitor");
-        serverMonitor.start();
     }
 
     /**
@@ -79,30 +49,18 @@ public class ConsistentHashServerImpl implements BalanceService {
      */
     @Override
     public Server getServer(int requestNumber, String requestAddress) {
-        Server server = null;
-        while (true) {
-            synchronized (treeMapHash) {
-                if (treeMapHash.isEmpty()) {
-                    logger.warn("Don not have server available!");
-                    break;
-                }
-                int hash = GetHashCode.getHashCode(requestAddress);
-                // 向右寻找第一个 key
-                Map.Entry<Integer, Server> subEntry = treeMapHash.ceilingEntry(hash);
-                // 设置成一个环，如果超过尾部，则取第一个点
-                subEntry = subEntry == null ? treeMapHash.firstEntry() : subEntry;
-                Server server1 = subEntry.getValue();
-                // 测试连接
-                boolean isConnected = ConnectUtil.telnet(server1.getAddress(), server1.getPort(), 200);
-                if (isConnected) {
-                    server = server1;
-                    break;
-                } else {
-                    //失败则加入到失效服务器列表并删除此节点
-                    failServer.add(server1);
-                    delServerNode(server1);
-                }
+        Server server;
+        synchronized (treeMapHash) {
+            if (treeMapHash.isEmpty()) {
+                logger.warn("Don not have server available!");
+                return null;
             }
+            int hash = GetHashCode.getHashCode(requestAddress);
+            // 向右寻找第一个 key
+            Map.Entry<Integer, Server> subEntry = treeMapHash.ceilingEntry(hash);
+            // 设置成一个环，如果超过尾部，则取第一个点
+            subEntry = subEntry == null ? treeMapHash.firstEntry() : subEntry;
+            server = subEntry.getValue();
         }
         return server;
     }

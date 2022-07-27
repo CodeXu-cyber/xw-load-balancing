@@ -40,7 +40,7 @@ public class Main {
                 //根据负载均衡算法获取转发服务器
                 Server server = balanceService.getServer(requestNumber, localSocket.getInetAddress().getHostAddress());
                 if (server == null) {
-                    return;
+                    System.exit(0);
                 }
                 //5分钟内无数据传输、关闭链接
                 localSocket.setSoTimeout(SO_TIME_OUT);

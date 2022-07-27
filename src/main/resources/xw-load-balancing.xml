@@ -17,6 +17,8 @@
         <!--HashServer-余数Hash-->
         <!--ConsistentHash-一致性Hash-->
         <setting name="random" value="ConsistentHash"/>
+        <!--是否打开服务监视器实现服务动态增减-->
+        <setting name="openServerMonitor" value="true"/>
         <!--监听端口,默认8088-->
         <setting name="port" value="8088"/>
     </settings>

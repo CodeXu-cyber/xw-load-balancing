@@ -76,6 +76,11 @@ public class Configuration {
                                                 balanceService = new RandomServerImpl(serverList);
                                                 break;
                                         }
+                                    case "openServerMonitor":
+                                        if ("true".equals(c.attributeValue("value"))) {
+                                            balanceService = new ServerMonitorImpl(balanceService);
+                                        }
+                                        break;
                                     default:
                                         break;
                                 }

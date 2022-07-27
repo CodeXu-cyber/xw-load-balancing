@@ -1,13 +1,11 @@
 package system.random.imp;
 
 import org.apache.log4j.Logger;
-import system.common.ConnectUtil;
 import system.common.GetHashCode;
 import system.entity.Server;
 import system.random.BalanceService;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,40 +19,11 @@ public class HashServerImpl implements BalanceService {
      * 服务器列表
      */
     private final List<Server> serverList;
-    /**
-     * 连接失败服务器列表
-     */
-    private final List<Server> failServer = Collections.synchronizedList(new LinkedList<>());
 
     private static final Logger logger = Logger.getLogger(HashServerImpl.class);
 
     public HashServerImpl(List<Server> serverList) {
         this.serverList = Collections.synchronizedList(serverList);
-        Runnable runnable = () -> {
-            logger.info("Server Monitor start!");
-            while (true) {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (serverList.isEmpty()){
-                    logger.info("Server Monitor stop!");
-                    return;
-                }
-                //对错误服务列表一直监控
-                for (Server server : failServer) {
-                    boolean isConnected = ConnectUtil.telnet(server.getAddress(), server.getPort(), 200);
-                    if (isConnected) {
-                        failServer.removeIf(server1 -> server1.getAddress().equals(server.getAddress()) && server1.getPort().equals(server.getPort()));
-                        addServerNode(server);
-                    }
-                }
-            }
-        };
-        Thread serverMonitor = new Thread(runnable);
-        serverMonitor.setName("server-monitor");
-        serverMonitor.start();
     }
 
     /**
@@ -67,24 +36,12 @@ public class HashServerImpl implements BalanceService {
      */
     @Override
     public Server getServer(int requestNumber, String requestAddress) {
-        Server server = null;
-        while (true) {
-            if (serverList.isEmpty()){
-                logger.warn("Don not have server available!");
-                break;
-            }
-            Server server1 = serverList.get(GetHashCode.getHashCode(requestAddress) % serverList.size());
-            // 测试连接
-            boolean isConnected = ConnectUtil.telnet(server1.getAddress(), server1.getPort(), 200);
-            if (isConnected) {
-                server = server1;
-                break;
-            } else {
-                //失败则加入到失效服务器列表并删除此节点
-                failServer.add(server1);
-                delServerNode(server1);
-            }
+        Server server;
+        if (serverList.isEmpty()) {
+            logger.warn("Don not have server available!");
+            return null;
         }
+        server = serverList.get(GetHashCode.getHashCode(requestAddress) % serverList.size());
         return server;
     }
 
@@ -105,7 +62,7 @@ public class HashServerImpl implements BalanceService {
      */
     @Override
     public void delServerNode(Server server) {
-        serverList.removeIf(server1 -> server1.getAddress().equals(server.getAddress())&&server1.getPort().equals(server.getPort()));
+        serverList.removeIf(server1 -> server1.getAddress().equals(server.getAddress()) && server1.getPort().equals(server.getPort()));
     }
 
 
