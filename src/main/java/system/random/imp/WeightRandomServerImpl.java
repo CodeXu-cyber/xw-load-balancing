@@ -4,7 +4,10 @@ import org.apache.log4j.Logger;
 import system.entity.Server;
 import system.random.BalanceService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 /**
  * 加权随机实现类
@@ -13,20 +16,15 @@ import java.util.*;
  * @date 2022/07/18 10:41
  **/
 public class WeightRandomServerImpl implements BalanceService {
+    private static final Logger logger = Logger.getLogger(WeightRandomServerImpl.class);
     /**
      * 服务器列表
      */
     private final List<Server> serverList;
     /**
-     * 连接失败服务器列表
-     */
-    private final List<Server> failServer = Collections.synchronizedList(new LinkedList<>());
-    /**
      * 伪随机数生成器
      */
     private final Random random = new Random();
-
-    private static final Logger logger = Logger.getLogger(WeightRandomServerImpl.class);
 
     public WeightRandomServerImpl(List<Server> serverList) {
         List<Server> servers = new ArrayList<>();

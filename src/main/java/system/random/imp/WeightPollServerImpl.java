@@ -16,12 +16,11 @@ import java.util.List;
  **/
 public class WeightPollServerImpl implements BalanceService {
 
+    private static final Logger logger = Logger.getLogger(WeightPollServerImpl.class);
     /**
      * 服务器列表
      */
     private final List<Server> serverList;
-
-    private static final Logger logger = Logger.getLogger(WeightPollServerImpl.class);
 
     public WeightPollServerImpl(List<Server> serverList) {
         List<Server> servers = new ArrayList<>();

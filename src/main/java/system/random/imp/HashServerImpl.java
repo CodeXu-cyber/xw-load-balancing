@@ -15,12 +15,11 @@ import java.util.List;
  * @date 2022/07/18 10:41
  **/
 public class HashServerImpl implements BalanceService {
+    private static final Logger logger = Logger.getLogger(HashServerImpl.class);
     /**
      * 服务器列表
      */
     private final List<Server> serverList;
-
-    private static final Logger logger = Logger.getLogger(HashServerImpl.class);
 
     public HashServerImpl(List<Server> serverList) {
         this.serverList = Collections.synchronizedList(serverList);

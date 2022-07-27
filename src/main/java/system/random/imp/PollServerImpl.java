@@ -14,12 +14,11 @@ import java.util.List;
  * @date 2022/07/18 10:41
  **/
 public class PollServerImpl implements BalanceService {
+    private static final Logger logger = Logger.getLogger(PollServerImpl.class);
     /**
      * 服务器列表
      */
     private final List<Server> serverList;
-
-    private static final Logger logger = Logger.getLogger(PollServerImpl.class);
 
     public PollServerImpl(List<Server> serverList) {
         this.serverList = Collections.synchronizedList(serverList);

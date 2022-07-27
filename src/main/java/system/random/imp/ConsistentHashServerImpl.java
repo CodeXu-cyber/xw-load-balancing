@@ -1,12 +1,13 @@
 package system.random.imp;
 
 import org.apache.log4j.Logger;
-import system.common.ConnectUtil;
 import system.common.GetHashCode;
 import system.entity.Server;
 import system.random.BalanceService;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * 一致性Hash实现类
@@ -15,6 +16,7 @@ import java.util.*;
  * @date 2022/07/18 10:41
  **/
 public class ConsistentHashServerImpl implements BalanceService {
+    private static final Logger logger = Logger.getLogger(ConsistentHashServerImpl.class);
     /**
      * 虚拟节点数
      */
@@ -23,8 +25,6 @@ public class ConsistentHashServerImpl implements BalanceService {
      * 一致性hash环
      */
     private final TreeMap<Integer, Server> treeMapHash;
-
-    private static final Logger logger = Logger.getLogger(ConsistentHashServerImpl.class);
 
 
     public ConsistentHashServerImpl(List<Server> serverList, Integer vnnNodeCount) {

@@ -16,17 +16,15 @@ import java.util.Random;
  **/
 public class RandomServerImpl implements BalanceService {
 
+    private static final Logger logger = Logger.getLogger(RandomServerImpl.class);
     /**
      * 服务器列表
      */
     private final List<Server> serverList;
-
     /**
      * 伪随机数生成器
      */
     private final Random random = new Random();
-
-    private static final Logger logger = Logger.getLogger(RandomServerImpl.class);
 
     public RandomServerImpl(List<Server> serverList) {
         this.serverList = Collections.synchronizedList(serverList);

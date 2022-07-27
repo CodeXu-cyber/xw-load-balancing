@@ -5,7 +5,6 @@ import system.common.ConnectUtil;
 import system.entity.Server;
 import system.random.BalanceService;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,14 +17,12 @@ import java.util.concurrent.locks.LockSupport;
  * @date 2022/07/27 16:58
  **/
 public class ServerMonitorImpl implements BalanceService {
+    private static final Logger logger = Logger.getLogger(ServerMonitorImpl.class);
     private final BalanceService balanceService;
     /**
      * 连接失败服务器列表
      */
     private final List<Server> failServer = Collections.synchronizedList(new LinkedList<>());
-
-    private static final Logger logger = Logger.getLogger(ServerMonitorImpl.class);
-
     private final Thread serverMonitor;
 
     public ServerMonitorImpl(BalanceService balanceService) {
@@ -40,7 +37,7 @@ public class ServerMonitorImpl implements BalanceService {
                 }
                 //对错误服务列表一直监控
                 failServer.removeIf(server -> {
-                    if (ConnectUtil.telnet(server.getAddress(), server.getPort(), 200)){
+                    if (ConnectUtil.telnet(server.getAddress(), server.getPort(), 200)) {
                         addServerNode(server);
                         return true;
                     }
