@@ -1,9 +1,9 @@
-package system.random.imp;
+package system.balance.imp;
 
 import org.apache.log4j.Logger;
 import system.common.ConnectUtil;
 import system.entity.Server;
-import system.random.BalanceService;
+import system.balance.BalanceService;
 
 import java.util.Collections;
 import java.util.LinkedList;

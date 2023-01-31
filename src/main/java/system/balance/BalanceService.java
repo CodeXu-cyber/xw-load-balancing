@@ -1,4 +1,4 @@
-package system.random;
+package system.balance;
 
 import system.entity.Server;
 

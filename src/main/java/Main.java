@@ -2,7 +2,7 @@ import org.apache.log4j.Logger;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import system.configure.Configuration;
 import system.entity.Server;
-import system.random.BalanceService;
+import system.balance.BalanceService;
 import system.socket.SocketThread;
 
 import java.io.IOException;

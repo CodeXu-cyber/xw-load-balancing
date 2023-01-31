@@ -9,6 +9,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
+ * 套接字线
+ *
  * @ClassName SocketThread
  * @Author xuwei
  * @DATE 2022/4/12
@@ -36,6 +38,9 @@ public class SocketThread extends Thread {
         this.remotePort = remotePort;
     }
 
+    /**
+     * 运行
+     */
     @Override
     public void run() {
         try {
