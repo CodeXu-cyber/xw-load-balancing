@@ -9,12 +9,13 @@ import system.entity.Server;
  * @date 2022/07/18 10:41
  **/
 public interface BalanceService {
+
     /**
-     * 获取服务器
+     * 得到服务器
      *
-     * @param requestNumber  请求量
+     * @param requestNumber  请求数
      * @param requestAddress 请求地址
-     * @return
+     * @return {@link Server}
      */
     Server getServer(int requestNumber, String requestAddress);
 
