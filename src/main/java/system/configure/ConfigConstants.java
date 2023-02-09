@@ -100,11 +100,11 @@ public class ConfigConstants {
     /**
      * 默认虚拟节点数量
      */
-    public static final Integer DEFAULT_VNN_NODE_COUNT = 3;
+    public static final Integer DEFAULT_VNN_NODE_COUNT = 1;
     /**
      * server默认权重
      */
-    public static final Integer SERVER_DEFAULT_WEIGHT = 0;
+    public static final Integer SERVER_DEFAULT_WEIGHT = 1;
     /**
      * server默认端口
      */

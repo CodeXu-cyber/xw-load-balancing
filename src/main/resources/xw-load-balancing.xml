@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <servers>
+        <!--服务节点,name-服务名称,address-服务地址,port-服务端口,weight-服务权重,默认权重1-->
         <server name="sever1" address="127.0.0.1" port="3306" weight="1"/>
         <server name="sever2" address="127.0.0.1" port="3306" weight="2"/>
         <server name="sever3" address="127.0.0.1" port="3306" weight="2"/>
         <server name="sever4" address="127.0.0.1" port="3306" weight="1"/>
     </servers>
     <settings>
-        <!--虚拟节点数量-->
+        <!--虚拟节点数量,默认1-->
         <setting name="vnnNodeCount" value="3"/>
         <!--六种负载均衡方式可选,默认RandomServer-->
         <!--RandomServer-完全随机算法-->
