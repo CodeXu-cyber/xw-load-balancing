@@ -30,13 +30,13 @@ public class ConsistentHashServerImpl implements BalanceService {
     public ConsistentHashServerImpl(List<Server> serverList, Integer vnnNodeCount) {
         this.vnnNodeCount = vnnNodeCount;
         TreeMap<Integer, Server> treeMapHash = new TreeMap<>();
-        for (Server server : serverList) {
-            int hash = GetHashCode.getHashCode(server.getAddress() + server.getPort());
-            treeMapHash.put(hash, server);
+        serverList.forEach(item -> {
+            int hash = GetHashCode.getHashCode(item.getAddress() + item.getPort());
+            treeMapHash.put(hash, item);
             for (int i = 1; i <= this.vnnNodeCount; i++) {
-                treeMapHash.put(GetHashCode.getHashCode(server.getAddress() + server.getPort() + "&&" + i), server);
+                treeMapHash.put(GetHashCode.getHashCode(item.getAddress() + item.getPort() + "&&" + i), item);
             }
-        }
+        });
         this.treeMapHash = treeMapHash;
     }
 

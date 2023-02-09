@@ -28,11 +28,11 @@ public class WeightRandomServerImpl implements BalanceService {
 
     public WeightRandomServerImpl(List<Server> serverList) {
         List<Server> servers = new ArrayList<>();
-        for (Server server : serverList) {
-            for (int i = 0; i < server.getWeight(); i++) {
-                servers.add(server);
+        serverList.forEach(item -> {
+            for (int i = 0; i < item.getWeight(); i++) {
+                servers.add(item);
             }
-        }
+        });
         this.serverList = Collections.synchronizedList(servers);
     }
 
