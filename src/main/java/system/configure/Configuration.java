@@ -39,12 +39,12 @@ public class Configuration {
             } catch (DocumentException e) {
                 e.printStackTrace();
             }
-            int vnnNodeCount = 3;
+            int vnnNodeCount = ConfigConstants.DEFAULT_VNN_NODE_COUNT;
             boolean openRedis = false;
-            String redisPort = "";
-            String redisHost = "";
-            String redisPassword = "";
-            String redisChannel = "";
+            String redisPort = ConfigConstants.DEFAULT_STRING;
+            String redisHost = ConfigConstants.DEFAULT_STRING;
+            String redisPassword = ConfigConstants.DEFAULT_STRING;
+            String redisChannel = ConfigConstants.DEFAULT_STRING;
             assert document != null;
             Element root = document.getRootElement();
             List<Element> childElements = root.elements();
@@ -95,12 +95,12 @@ public class Configuration {
                                                 break;
                                         }
                                     case ConfigConstants.OPEN_SERVER_MONITOR:
-                                        if ("true".equals(c.attributeValue(ConfigConstants.VALUE))) {
+                                        if (ConfigConstants.TRUE.equals(c.attributeValue(ConfigConstants.VALUE))) {
                                             balanceService = new ServerMonitorImpl(balanceService);
                                         }
                                         break;
                                     case ConfigConstants.OPEN_REDIS:
-                                        if ("true".equals(c.attributeValue(ConfigConstants.VALUE))) {
+                                        if (ConfigConstants.TRUE.equals(c.attributeValue(ConfigConstants.VALUE))) {
                                             openRedis = true;
                                         }
                                         break;

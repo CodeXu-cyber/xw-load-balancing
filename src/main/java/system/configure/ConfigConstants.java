@@ -95,6 +95,12 @@ public class ConfigConstants {
      * redis默认订阅频道
      */
     public static final String REDIS_DEFAULT_CHANNEL = "balance";
+    public static final String TRUE = "true";
+    public static final String DEFAULT_STRING = "";
+    /**
+     * 默认虚拟节点数量
+     */
+    public static final Integer DEFAULT_VNN_NODE_COUNT = 3;
     /**
      * server默认权重
      */
