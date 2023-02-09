@@ -1,8 +1,10 @@
 import org.apache.log4j.Logger;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
+import redis.clients.jedis.Jedis;
 import system.configure.Configuration;
 import system.entity.Server;
 import system.balance.BalanceService;
+import system.redis.Subscriber;
 import system.socket.SocketThread;
 
 import java.io.IOException;
@@ -18,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @DATE 2022/4/11
  */
 public class Main {
-    public static final int SO_TIME_OUT = 300000;
+    public static final int SO_TIME_OUT = 8000;
     private static final Configuration CONFIGURATION = Configuration.getConfiguration("src/main/resources/xw-load-balancing.xml");
     private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(5, 10,
             60L, TimeUnit.SECONDS,
@@ -42,7 +44,7 @@ public class Main {
                 if (server == null) {
                     System.exit(0);
                 }
-                //5分钟内无数据传输、关闭链接
+                //8s内无数据传输、关闭链接
                 localSocket.setSoTimeout(SO_TIME_OUT);
                 logger.info(localSocket.getRemoteSocketAddress().toString().replace("/", "") + "  connect to server : \"" + server.getServerName() + "\"");
                 //启动线程处理本连接

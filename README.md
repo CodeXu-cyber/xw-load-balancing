@@ -15,9 +15,13 @@
     │   │       │   ├── ConnectUtil.java    连接工具类，可测试是否与指定IP端口连接成功
     │   │       │   └── GetHashCode.java   重计算Hash值工具类
     │   │       ├── configure
+    │   │       │   ├── ConfigConstants.java  配置常量类
     │   │       │   └── Configuration.java   配置类，解析xml配置文件并封装为配置类
     │   │       ├── entity
     │   │       │   └── Server.java   服务器类，包含serverName，ip，port，wight属性
+    │   │       ├── redis
+    │   │       │   ├── JedisConstants.java   redis常量类
+    │   │       │   └── Subscriber.java   redis订阅实现类
     │   │       ├── random
     │   │       │   ├── BalanceService.java   负载均衡接口，包含获取server，增加server，删除server方法
     │   │       │   └── imp
@@ -37,23 +41,25 @@
         └── java
 ```
 
-- 可配置五种负载均衡方式
+- 可配置六种负载均衡方式
     - 完全随机算法
     - 加权随机算法
     - 完全轮询算法
     - 加权轮询算法
     - 余数Hash算法
     - 简单的一致性Hash算法
+- 可配置开启Redis订阅服务,通过发布订阅来上线或下线服务节点
+- 可配置服务监控线程监控服务状态,自动下线不健康节点,并后台不断重试,如果节点恢复健康则重新上线
 - xml配置文件如下定义
 ```
 
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <servers>
-        <server name="sever1" address="127.0.0.1" port="8083" weight="1"/>
-        <server name="sever2" address="127.0.0.1" port="8082" weight="2"/>
-        <server name="sever3" address="127.0.0.1" port="8081" weight="2"/>
-        <server name="sever4" address="127.0.0.1" port="8080" weight="1"/>
+        <server name="sever1" address="127.0.0.1" port="3306" weight="1"/>
+        <server name="sever2" address="127.0.0.1" port="3306" weight="2"/>
+        <server name="sever3" address="127.0.0.1" port="3306" weight="2"/>
+        <server name="sever4" address="127.0.0.1" port="3306" weight="1"/>
     </servers>
     <settings>
         <!--虚拟节点数量-->
@@ -65,11 +71,21 @@
         <!--WeightPollServer-加权轮询算法-->
         <!--HashServer-余数Hash-->
         <!--ConsistentHash-一致性Hash-->
-        <setting name="random" value="ConsistentHash"/>
+        <setting name="random" value="RandomServer"/>
         <!--是否打开服务监视器实现服务动态增减-->
         <setting name="openServerMonitor" value="true"/>
         <!--监听端口,默认8088-->
         <setting name="port" value="8088"/>
+        <!--是否打开redis-->
+        <setting name="openRedis" value="true"/>
+        <!--redis地址-->
+        <setting name="redisHost" value="localhost"/>
+        <!--redis端口-->
+        <setting name="redisPort" value="6379"/>
+        <!--redis密码-->
+        <setting name="redisPassword" value=""/>
+        <!--redis订阅频道,默认频道balance-->
+        <setting name="redisChannel" value="balance"/>
     </settings>
 </configuration>
 ```

@@ -20,7 +20,7 @@ public class SocketThread extends Thread {
     /**
      * 五分钟超时
      */
-    public static final int SO_TIME_OUT = 300000;
+    public static final int SO_TIME_OUT = 8000;
     private static final int BUFFER_SIZE = 8092;
     private static final Logger log = Logger.getLogger(SocketThread.class);
 
@@ -56,8 +56,8 @@ public class SocketThread extends Thread {
             new ReadThread().start();
             //写数据,负责读取客户端发送过来的数据，转发给远程
             dataTransmission(localSocketInputStream, remoteSocketOutputStream);
-        } catch (Exception e) {
-            log.warn(e);
+        } catch (Exception ignored) {
+
         } finally {
             close();
         }
@@ -88,14 +88,14 @@ public class SocketThread extends Thread {
         try {
             if (localSocket != null && !localSocket.isClosed()) {
                 localSocket.close();
-                log.info("localSocket ---> " + localSocket.getRemoteSocketAddress().toString().replace("/", "") + " socket closed");
+                //log.info("localSocket ---> " + localSocket.getRemoteSocketAddress().toString().replace("/", "") + " socket closed");
             }
             if (remoteSocket != null && !remoteSocket.isClosed()) {
                 remoteSocket.close();
-                log.info("remoteSocket ---> " + remoteSocket.getRemoteSocketAddress().toString().replace("/", "") + " socket closed");
+                //log.info("remoteSocket ---> " + remoteSocket.getRemoteSocketAddress().toString().replace("/", "") + " socket closed");
             }
         } catch (IOException e1) {
-            e1.printStackTrace();
+            log.warn(e1);
         }
     }
 
@@ -107,8 +107,8 @@ public class SocketThread extends Thread {
         public void run() {
             try {
                 dataTransmission(remoteSocketInputStream, localSocketOutputStream);
-            } catch (IOException e) {
-                log.warn(e);
+            } catch (IOException ignored) {
+
             } finally {
                 close();
             }

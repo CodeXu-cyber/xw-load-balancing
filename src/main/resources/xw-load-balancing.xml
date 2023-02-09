@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <servers>
-        <server name="sever1" address="127.0.0.1" port="8083" weight="1"/>
-        <server name="sever2" address="127.0.0.1" port="8082" weight="2"/>
-        <server name="sever3" address="127.0.0.1" port="8081" weight="2"/>
-        <server name="sever4" address="127.0.0.1" port="8080" weight="1"/>
+        <server name="sever1" address="127.0.0.1" port="3306" weight="1"/>
+        <server name="sever2" address="127.0.0.1" port="3306" weight="2"/>
+        <server name="sever3" address="127.0.0.1" port="3306" weight="2"/>
+        <server name="sever4" address="127.0.0.1" port="3306" weight="1"/>
     </servers>
     <settings>
         <!--虚拟节点数量-->
@@ -16,10 +16,20 @@
         <!--WeightPollServer-加权轮询算法-->
         <!--HashServer-余数Hash-->
         <!--ConsistentHash-一致性Hash-->
-        <setting name="random" value="ConsistentHash"/>
+        <setting name="random" value="RandomServer"/>
         <!--是否打开服务监视器实现服务动态增减-->
         <setting name="openServerMonitor" value="true"/>
         <!--监听端口,默认8088-->
         <setting name="port" value="8088"/>
+        <!--是否打开redis-->
+        <setting name="openRedis" value="true"/>
+        <!--redis地址-->
+        <setting name="redisHost" value="localhost"/>
+        <!--redis端口-->
+        <setting name="redisPort" value="6379"/>
+        <!--redis密码-->
+        <setting name="redisPassword" value=""/>
+        <!--redis订阅频道,默认频道balance-->
+        <setting name="redisChannel" value="balance"/>
     </settings>
 </configuration>
