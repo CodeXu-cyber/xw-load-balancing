@@ -17,7 +17,7 @@
         <!--WeightPollServer-加权轮询算法-->
         <!--HashServer-余数Hash-->
         <!--ConsistentHash-一致性Hash-->
-        <setting name="random" value="RandomServer"/>
+        <setting name="random" value="PollServer"/>
         <!--是否打开服务监视器实现服务动态增减-->
         <setting name="openServerMonitor" value="true"/>
         <!--监听端口,默认8088-->
